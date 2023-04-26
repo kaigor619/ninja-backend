@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 
 require("dotenv").config();
 
-const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 const app = express();
 
