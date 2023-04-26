@@ -51,7 +51,7 @@ const BOT_API_URL = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKE
 app.all("/score", (req, res, next) => {
   const token = req.headers.token;
 
-  if (!jws.verify(token, jwsAlg, jwsSecretKey)) {
+  if (!token || !jws.verify(token, jwsAlg, jwsSecretKey)) {
     res.statusCode = 403;
     return res.end();
   }
