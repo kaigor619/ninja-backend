@@ -3,6 +3,7 @@ const path = require("path");
 const jws = require("jws");
 const express = require("express");
 const cors = require("cors");
+const fetch = require("node-fetch");
 
 require("dotenv").config();
 
@@ -14,11 +15,6 @@ const gameName = process.env.GAME_NAME;
 const gameUrl = process.env.GAME_URL;
 const jwsAlg = "HS256";
 const jwsSecretKey = process.env.SECRET_KEY;
-
-const markup = Markup.inlineKeyboard([
-  Markup.button.game("🎮 Play now!"),
-  Markup.button.url("Telegraf help", "http://telegraf.js.org"),
-]);
 
 bot.start((ctx) => {
   ctx.sendGame(gameName);
