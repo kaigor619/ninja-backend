@@ -1,5 +1,4 @@
-const { Telegraf, Markup } = require("telegraf");
-const path = require("path");
+const { Telegraf } = require("telegraf");
 const jws = require("jws");
 const express = require("express");
 const cors = require("cors");
@@ -26,9 +25,9 @@ bot.on("callback_query", function (query) {
     payload: {
       game: gameName,
       user: query.update.callback_query.from.id,
-      imessage: undefined,
-      message: query.update.callback_query.message.message_id,
-      chat: query.update.callback_query.message.chat.id,
+      imessage: query.update.callback_query.inline_message_id,
+      message: query.update.callback_query.message?.message_id || null,
+      chat: query.update.callback_query.message?.chat?.id || null,
     },
     secret: jwsSecretKey,
   });
@@ -64,9 +63,10 @@ app.get("/score", (req, res) => {
 
   const searchParams = new URLSearchParams();
   searchParams.append("user_id", user);
-  searchParams.append("message_id", message);
-  searchParams.append("chat_id", chat);
-  searchParams.append("inline_message_id", imessage);
+
+  if (message) searchParams.append("message_id", message);
+  if (chat) searchParams.append("chat_id", chat);
+  if (imessage) searchParams.append("inline_message_id", imessage);
 
   fetch(`${BOT_API_URL}/getGameHighScores?${searchParams.toString()}`)
     .then((response) => response.json())
@@ -75,7 +75,8 @@ app.get("/score", (req, res) => {
 
       res.setHeader("content-type", "application/json");
       res.statusCode = 200;
-      res.end(JSON.stringify({ score: data.result[0].score }));
+
+      res.end(JSON.stringify({ score: data.result?.[0]?.score || 0 }));
     })
     .catch((err) => {
       res.statusCode = err.error_code || 500;
@@ -93,9 +94,11 @@ app.post("/score", (req, res) => {
 
   const searchParams = new URLSearchParams();
   searchParams.append("user_id", user);
-  searchParams.append("message_id", message);
-  searchParams.append("chat_id", chat);
-  searchParams.append("inline_message_id", imessage);
+
+  if (message) searchParams.append("message_id", message);
+  if (chat) searchParams.append("chat_id", chat);
+  if (imessage) searchParams.append("inline_message_id", imessage);
+
   searchParams.append("score", scoreValue);
   searchParams.append("force", true);
 
